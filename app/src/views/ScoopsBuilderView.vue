@@ -222,9 +222,7 @@ export default {
         try {
           if (!orderId) {
             //orderPayload.basketItems = products; //[treatPayload];
-            console.log("basketItems:" + JSON.stringify(orderPayload.basketItems));
             const created = await createOrder(orderPayload);
-            localStorage.setItem('s2g_orderId', created.orderId);
             this.$emit('orderUpdated', created);
             // toast success for creation
             toastService.success(`Order ${created.orderId} created and item added to basket`, 'Order Created');
@@ -243,7 +241,6 @@ export default {
               console.warn('Fetching existing order failed, creating new order', fetchErr);
               //orderPayload.basketItems = products;
               const created = await createOrder(orderPayload);
-              localStorage.setItem('s2g_orderId', created.orderId);
               this.$emit('orderUpdated', created);
               toastService.success(`Order ${created.orderId} created and item added to basket`, 'Order Created');
             }

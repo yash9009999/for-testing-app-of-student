@@ -135,7 +135,7 @@ export default {
     },
     onOrderUpdated(order) {
       try {
-        this.orderId = order && order.id ? order.id : localStorage.getItem('s2g_orderId');
+        this.orderId = order && order.orderId ? order.orderId : localStorage.getItem('s2g_orderId');
         // if the order was cleared (e.g. after successful checkout), also clear the in-memory cart
         if (!order) this.cart = [];
       } catch(e) { this.orderId = null; }

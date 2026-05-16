@@ -78,21 +78,21 @@ public class OrderService : IOrderService
             query = query.Where(o => o.User != null && string.Equals(o.User.ExternalUserId, callerExternalUserId, StringComparison.Ordinal));
         }
 
-        return query
-            .Where(o =>
+        var results = new List<OrderDTO>();
+        foreach (var order in query)
+        {
+            try
             {
-                try
-                {
-                    EnsureCallerMayViewOrder(o, callerExternalUserId, callerGuestAccessToken);
-                    return true;
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    return false;
-                }
-            })
-            .Select(MapToDto)
-            .ToList();
+                EnsureCallerMayViewOrder(order, callerExternalUserId, callerGuestAccessToken);
+                results.Add(MapToDto(order));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // skip orders the caller cannot view
+            }
+        }
+
+        return results;
     }
 
     public OrderDTO CreateOrder(OrderCreateRequest incomingOrder, string? ownerExternalUserId)

@@ -13,7 +13,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { exchangeAuthorizationCode, storeAuthToken } from '../services/authService';
+import { exchangeAuthorizationCode, storeAuthToken, consumeOAuthState } from '../services/authService';
 
 const router = useRouter();
 const route = useRoute();
@@ -22,7 +22,6 @@ const error = ref(null);
 
 onMounted(async () => {
   try {
-    // Extract authorization code from query parameter
     const code = route.query.code;
     const state = route.query.state;
 
@@ -32,17 +31,18 @@ onMounted(async () => {
       return;
     }
 
-    // Exchange code for token with Auth Server
+    if (!consumeOAuthState(state)) {
+      error.value = 'Invalid OAuth state — please sign in again';
+      loading.value = false;
+      return;
+    }
+
     const response = await exchangeAuthorizationCode(code);
 
     if (response.success && response.token && response.userId) {
-      // Store token and user ID
       storeAuthToken(response.token, response.userId);
-
-      // Emit auth-changed event for parent component
       window.dispatchEvent(new CustomEvent('auth-changed'));
 
-      // Redirect to home or intended destination
       const redirect = sessionStorage.getItem('auth-redirect') || '/';
       sessionStorage.removeItem('auth-redirect');
       router.push(redirect);

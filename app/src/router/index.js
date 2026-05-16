@@ -8,6 +8,7 @@ import RegisterView from '../views/RegisterView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import UserView from '../views/UserView.vue'
 import AuthCallbackView from '../views/AuthCallbackView.vue'
+import { isAuthenticated } from '../services/authService'
 
 const routes = [
   {
@@ -67,6 +68,12 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to) => {
+  if (to.name === 'user' && !isAuthenticated()) {
+    return { name: 'login', query: { redirect: to.fullPath } };
+  }
 })
 
 export default router

@@ -176,7 +176,7 @@ export default {
           const tx = result.transactionId;
           const order = result.order || result;
           // persist current order id briefly for navigation/state
-          try { localStorage.setItem('s2g_orderId', order.id); } catch(e) {}
+          try { localStorage.setItem('s2g_orderId', String(order.orderId)); } catch(e) {}
           toastService.success(`Payment accepted — TX ${tx}`, 'Checkout Complete');
           // clear the client-side basket (remove stored order id and in-memory order)
           try { localStorage.removeItem('s2g_orderId'); } catch(e) {}

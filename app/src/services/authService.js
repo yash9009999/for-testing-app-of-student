@@ -108,3 +108,16 @@ export function clearAuth() {
 export function isAuthenticated() {
   return !!getAuthToken();
 }
+
+/** SSD: CSRF protection for OAuth redirect flow — validate in callback before exchanging code. */
+export function beginOAuthState() {
+  const state = crypto.randomUUID();
+  sessionStorage.setItem('oauth_state', state);
+  return state;
+}
+
+export function consumeOAuthState(receivedState) {
+  const expected = sessionStorage.getItem('oauth_state');
+  sessionStorage.removeItem('oauth_state');
+  return !!expected && !!receivedState && expected === receivedState;
+}

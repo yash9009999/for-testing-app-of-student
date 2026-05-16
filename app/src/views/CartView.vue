@@ -138,9 +138,11 @@ export default {
         // Adjust payload key to match your backend contract:
         // e.g. { promotionCode }, { promoCode }, { couponCode }, or { promotions: [code] }
         //const payload = { promotion: this.promoCode };
-        this.order.promotion = this.promoCode
-
-        const result = await updateOrder(this.order);
+        const result = await updateOrder({
+          orderId: this.order.orderId ?? this.orderId,
+          promotion: this.promoCode,
+          basketItems: this.order.basketItems
+        });
         const updated = result && (result.order || result);
         if (updated && updated.promotion) {
           this.order = updated;

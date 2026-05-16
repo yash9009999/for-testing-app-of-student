@@ -7,27 +7,32 @@ const AUTH_SERVER_URL = import.meta.env.VITE_AUTH_SERVER_URL || 'http://localhos
  * For a full OAuth flow, this would redirect to login page instead.
  */
 export async function login(username, password) {
+  const trimmedUser = (username ?? '').trim();
+  const response = await fetch(`${AUTH_SERVER_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: trimmedUser,
+      password: password ?? ''
+    })
+  });
+
+  let data;
   try {
-    const response = await fetch(`${AUTH_SERVER_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    });
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.message || 'Login failed');
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error logging in:', error);
-    throw error;
+    data = await response.json();
+  } catch {
+    throw new Error(
+      response.ok
+        ? 'Login failed: invalid response from auth server.'
+        : `Login failed (${response.status}). Is the auth server running on ${AUTH_SERVER_URL}?`
+    );
   }
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || `Login failed (${response.status})`);
+  }
+
+  return data;
 }
 
 /**
@@ -35,29 +40,37 @@ export async function login(username, password) {
  * For a full OAuth flow, this would redirect to registration page instead.
  */
 export async function register(fullName, username, email, password) {
+  const response = await fetch(`${AUTH_SERVER_URL}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fullName: (fullName ?? '').trim(),
+      username: (username ?? '').trim(),
+      email: (email ?? '').trim(),
+      password: password ?? ''
+    })
+  });
+
+  let data;
   try {
-    const response = await fetch(`${AUTH_SERVER_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fullName,
-        username,
-        email,
-        password
-      })
-    });
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.message || 'Registration failed');
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error registering:', error);
-    throw error;
+    data = await response.json();
+  } catch {
+    throw new Error(
+      response.ok
+        ? 'Registration failed: invalid response from auth server.'
+        : `Registration failed (${response.status}). Is the auth server running on ${AUTH_SERVER_URL}?`
+    );
   }
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || `Registration failed (${response.status})`);
+  }
+
+  return data;
+}
+
+export function notifyAuthChanged() {
+  window.dispatchEvent(new CustomEvent('auth-changed'));
 }
 
 /**

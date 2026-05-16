@@ -7,10 +7,10 @@ namespace AuthServer.Dtos;
 /// Prefer never logging this DTO verbatim (structured logging with explicit fields only).
 /// </summary>
 public record LoginRequest(
-    [property: Required]
-    [property: StringLength(50, MinimumLength = 1)]
+    [Required]
+    [StringLength(50, MinimumLength = 1)]
     string Username,
-    [property: Required]
-    [property: StringLength(128, MinimumLength = 8)]
+    [Required]
+    [StringLength(128, MinimumLength = 8)]
     string Password
 );

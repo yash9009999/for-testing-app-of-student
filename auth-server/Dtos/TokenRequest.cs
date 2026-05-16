@@ -7,9 +7,9 @@ namespace AuthServer.Dtos;
 /// This is part of the OAuth 2.0 Authorization Code Flow.
 /// </summary>
 public record TokenRequest(
-    [property: Required]
-    [property: StringLength(512, MinimumLength = 1)]
+    [Required]
+    [StringLength(512, MinimumLength = 1)]
     string Code,
-    [property: StringLength(2048)]
+    [StringLength(2048)]
     string? RedirectUri
 );

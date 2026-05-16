@@ -85,7 +85,7 @@ if (app.Environment.IsDevelopment())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     // SSD: EnsureCreated is dev-friendly only — production deployments should apply EF migrations (schema versioning).
     context.Database.EnsureCreated();
-    SqliteSchemaPatcher.EnsureOrderGuestAccessTokenColumn(context);
+    SqliteSchemaPatcher.Apply(context);
     SeedData.Initialize(context);
 }
 

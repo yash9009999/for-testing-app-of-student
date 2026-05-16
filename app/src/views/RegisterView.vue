@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { register, storeAuthToken } from '../services/authService';
+import { register, storeAuthToken, notifyAuthChanged } from '../services/authService';
 import toastService from '../services/toastService';
 
 export default {
@@ -120,7 +120,7 @@ export default {
         storeAuthToken(data.token, data.userId);
 
         toastService.success(`Welcome, ${this.form.fullName}!`, 'Account Created');
-        this.$emit('auth-changed');
+        notifyAuthChanged();
         this.$router.push('/');
       } catch (err) {
         this.error = err.message || 'An error occurred during registration';

@@ -53,6 +53,10 @@
           <p>Don't have an account?
             <router-link to="/register" class="auth-link">Create One</router-link>
           </p>
+          <p v-if="isDev" class="dev-hint">
+            Dev accounts (after auth server starts): <strong>testuser</strong> / <strong>password123</strong>
+            or <strong>alice</strong> / <strong>alice123</strong>. Registered users are cleared when the auth server restarts.
+          </p>
         </div>
       </div>
 
@@ -62,7 +66,7 @@
 </template>
 
 <script>
-import { login, storeAuthToken } from '../services/authService';
+import { login, storeAuthToken, notifyAuthChanged } from '../services/authService';
 import toastService from '../services/toastService';
 
 export default {
@@ -74,7 +78,8 @@ export default {
         password: ''
       },
       isLoading: false,
-      error: null
+      error: null,
+      isDev: import.meta.env.DEV
     };
   },
   methods: {
@@ -85,11 +90,10 @@ export default {
       try {
         const data = await login(this.form.username, this.form.password);
 
-        // Store token and userId
         storeAuthToken(data.token, data.userId);
 
-        toastService.success(`Welcome back, ${this.form.username}!`, 'Signed In');
-        this.$emit('auth-changed');
+        toastService.success(`Welcome back, ${this.form.username.trim()}!`, 'Signed In');
+        notifyAuthChanged();
         this.$router.push('/');
       } catch (err) {
         this.error = err.message || 'An error occurred during login';
@@ -247,6 +251,14 @@ export default {
 
 .auth-link:hover {
   opacity: 0.8;
+}
+
+.dev-hint {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.85;
+  line-height: 1.4;
 }
 
 .auth-accent {

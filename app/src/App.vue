@@ -40,12 +40,9 @@
   <Toasts />
 
   <div class="content">
-    <RouterView 
-      @iceCreamCreated="addToCart" 
-      @update:cart="updateCart" 
-      @orderUpdated="onOrderUpdated" 
-      @auth-changed="onAuthChanged"
-      :cart="cart" 
+    <RouterView
+      @orderUpdated="onOrderUpdated"
+      :cart="cart"
     />
   </div>
 </template>
@@ -102,6 +99,10 @@ export default {
   created() {
     this.loadLogos();
     try { this.orderId = localStorage.getItem('s2g_orderId'); } catch(e) { this.orderId = null; }
+    window.addEventListener('auth-changed', this.onAuthChanged);
+  },
+  beforeUnmount() {
+    window.removeEventListener('auth-changed', this.onAuthChanged);
   },
   computed: {
     isUserAuthenticated() {
